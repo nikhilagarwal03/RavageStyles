@@ -1,7 +1,7 @@
 import mongoose, { Schema, Document, Model } from 'mongoose';
 
 export interface IOrder extends Document {
-  _id: string; orderId: string; user: any;
+  _id: mongoose.Types.ObjectId; orderId: string; user: any;
   items: { product: any; name: string; image: string; price: number; size: string; quantity: number }[];
   shippingAddress: { name: string; phone: string; line1: string; line2?: string; city: string; state: string; pincode: string; country: string };
   subtotal: number; shippingFee: number; discount: number; total: number;
