@@ -1,51 +1,74 @@
 'use client';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { useAuthStore } from '@/store/authStore';
-import { Package, ShoppingCart, LogOut } from 'lucide-react';
-import { cn } from '@/lib/utils';
-
-const NAV = [{ l:'Products', h:'/admin/products', I:Package }, { l:'Orders', h:'/admin/orders', I:ShoppingCart }];
+import { LayoutDashboard, ShoppingBag, Users, Settings, Menu, X } from 'lucide-react';
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
-  const { user, isLoading, logout } = useAuthStore();
+  const { user } = useAuthStore();
   const router = useRouter();
   const pathname = usePathname();
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
-  useEffect(() => { if (!isLoading && (!user||!user.isAdmin)) router.push('/login'); }, [user, isLoading, router]);
+  useEffect(() => {
+    if (!user || !user.isAdmin) {
+      router.push('/login');
+    }
+  }, [user, router]);
 
-  if (isLoading || !user?.isAdmin) return (
-    <div className="min-h-screen flex items-center justify-center">
-      <div className="w-8 h-8 border-2 border-[var(--accent)] border-t-transparent rounded-full animate-spin"/>
-    </div>
-  );
+  if (!user || !user.isAdmin) return null;
+
+  const navItems = [
+    { name: 'Products', href: '/admin/products', icon: ShoppingBag },
+    { name: 'Orders', href: '/admin/orders', icon: LayoutDashboard },
+  ];
 
   return (
-    <div className="min-h-screen flex bg-[var(--bg-primary)]">
-      <aside className="w-56 bg-[var(--bg-secondary)] border-r border-[var(--border)] flex flex-col fixed left-0 top-0 h-full z-30">
-        <div className="p-5 border-b border-[var(--border)]">
-          <Link href="/" className="text-xl font-light tracking-[0.2em] uppercase" style={{ fontFamily: 'Cormorant Garamond, serif' }}>Ravage</Link>
-          <p className="text-[10px] tracking-[0.15em] uppercase text-[var(--accent)] mt-0.5">Admin Panel</p>
+    <div className="flex flex-col md:flex-row min-h-[calc(100vh-160px)] bg-gray-50">
+      {/* Mobile Toggle */}
+      <div className="md:hidden flex items-center justify-between p-4 bg-white border-b">
+        <span className="font-bold text-gray-800">Admin Panel</span>
+        <button onClick={() => setIsSidebarOpen(!isSidebarOpen)}>
+          {isSidebarOpen ? <X size={24} /> : <Menu size={24} />}
+        </button>
+      </div>
+
+      {/* Sidebar */}
+      <aside className={`
+        ${isSidebarOpen ? 'block' : 'hidden'} 
+        md:block w-full md:w-64 bg-white border-r min-h-full transition-all duration-300
+      `}>
+        <div className="p-6 hidden md:block">
+          <h2 className="text-xl font-bold text-gray-800">Admin Panel</h2>
         </div>
-        <nav className="flex-1 p-3 space-y-1">
-          {NAV.map(({ l, h, I }) => (
-            <Link key={h} href={h} className={cn('flex items-center gap-3 px-3 py-2.5 text-sm tracking-wide transition-colors', pathname.startsWith(h) ? 'bg-[var(--bg-tertiary)] text-[var(--text-primary)] border-l-2 border-[var(--accent)]' : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-tertiary)]')}>
-              <I size={15}/>{l}
-            </Link>
-          ))}
+        <nav className="mt-2 px-4 space-y-1">
+          {navItems.map((item) => {
+            const Icon = item.icon;
+            const isActive = pathname === item.href;
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                onClick={() => setIsSidebarOpen(false)}
+                className={`flex items-center space-x-3 p-3 rounded-lg transition-colors ${
+                  isActive 
+                    ? 'bg-black text-white' 
+                    : 'text-gray-600 hover:bg-gray-100'
+                }`}
+              >
+                <Icon size={20} />
+                <span className="font-medium">{item.name}</span>
+              </Link>
+            );
+          })}
         </nav>
-        <div className="p-4 border-t border-[var(--border)]">
-          <div className="px-3 py-2 mb-1">
-            <p className="text-xs font-medium truncate">{user.name}</p>
-            <p className="text-[10px] text-[var(--text-muted)] truncate">{user.email}</p>
-          </div>
-          <button onClick={async()=>{ await logout(); router.push('/'); }} className="flex items-center gap-2 px-3 py-2 text-xs text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 w-full transition-colors">
-            <LogOut size={13}/>Log Out
-          </button>
-        </div>
       </aside>
-      <main className="flex-1 ml-56 min-h-screen"><div className="p-6 sm:p-8">{children}</div></main>
+
+      {/* Main Content */}
+      <main className="flex-1 p-4 md:p-8 overflow-x-hidden">
+        {children}
+      </main>
     </div>
   );
 }

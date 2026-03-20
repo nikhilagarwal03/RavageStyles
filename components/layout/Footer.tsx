@@ -16,8 +16,8 @@ export default function Footer() {
           {Object.entries(cols).map(([title, items]) => (
             <div key={title}>
               <h3 className="text-xs tracking-[0.15em] uppercase font-medium mb-4">{title}</h3>
-              <ul className="space-y-2">{items.map(([label,href]) => (
-                <li key={href}><Link href={href} className="text-sm text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors">{label}</Link></li>
+              <ul className="space-y-2">{items.map(([label,href], idx) => (
+                <li key={label + '-' + idx}><Link href={href} className="text-sm text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors">{label}</Link></li>
               ))}</ul>
             </div>
           ))}

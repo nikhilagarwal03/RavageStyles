@@ -67,18 +67,27 @@ export default function Navbar() {
         <div className="bg-[var(--text-primary)] text-[var(--bg-primary)] text-center py-2 text-xs tracking-[0.15em] uppercase overflow-hidden">
           <div className="inline-flex animate-marquee whitespace-nowrap">
             {[...Array(4)].map((_,i) => (
-              <span key={i} className="mx-10">Free shipping over ₹999 &nbsp;·&nbsp; New arrivals weekly &nbsp;·&nbsp; Premium quality &nbsp;·&nbsp; Easy 30-day returns</span>
+              <span key={i} className="mx-10">New Arrivals Launched &nbsp;·&nbsp; Premium Quality &nbsp;·&nbsp;Big Discounts</span>
             ))}
           </div>
         </div>
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
-          <div className="flex items-center justify-between h-16">
-            <button onClick={() => setMobileOpen(!mobileOpen)} className="lg:hidden p-2 text-[var(--text-secondary)]">
-              {mobileOpen ? <X size={20} /> : <Menu size={20} />}
-            </button>
-            <Link href="/" className="absolute left-1/2 -translate-x-1/2 lg:static lg:translate-x-0">
-              <span className="text-2xl font-light tracking-[0.2em] uppercase" style={{ fontFamily: 'Cormorant Garamond, serif' }}>Ravage</span>
+          <div className="flex items-center justify-between h-16 md:h-20">
+            {/* Menu Button */}
+            <div className="flex items-center md:hidden">
+              <button onClick={() => setMobileOpen(!mobileOpen)} className="p-2 text-[var(--text-secondary)]">
+                {mobileOpen ? <X size={24} /> : <Menu size={24} />}
+              </button>
+            </div>
+
+            {/* Logo Section */}
+            <Link href="/" className="flex-1 flex justify-center md:justify-start">
+              <span className="text-xl md:text-2xl font-bold tracking-tighter">
+                RAVAGE 
+              </span>
             </Link>
+
+            {/* Desktop Navigation stays the same */}
             <nav className="hidden lg:flex items-center gap-8">
               {NAV.map(l => (
                 <Link key={l.href} href={l.href} className={cn('text-xs tracking-[0.12em] uppercase transition-colors relative group', pathname === l.href ? 'text-[var(--accent)]' : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]')}>
@@ -125,35 +134,77 @@ export default function Navbar() {
         </div>
       </header>
 
-      {/* Mobile menu */}
+      {/* Mobile Menu Overlay */}
       <AnimatePresence>
         {mobileOpen && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-40 lg:hidden">
-            <div className="absolute inset-0 bg-black/40" onClick={() => setMobileOpen(false)} />
-            <motion.div initial={{ x: -300 }} animate={{ x: 0 }} exit={{ x: -300 }} transition={{ type: 'tween', duration: 0.3 }}
-              className="absolute left-0 top-0 h-full w-72 bg-[var(--bg-secondary)] flex flex-col">
-              <div className="flex items-center justify-between p-6 border-b border-[var(--border)]">
-                <span className="text-xl tracking-widest font-light" style={{ fontFamily: 'Cormorant Garamond, serif' }}>RAVAGE</span>
-                <button onClick={() => setMobileOpen(false)}><X size={20} /></button>
-              </div>
-              <nav className="flex-1 p-6 space-y-5">
-                {NAV.map(l => (<Link key={l.href} href={l.href} className="block text-sm tracking-[0.1em] uppercase text-[var(--text-secondary)] hover:text-[var(--accent)] transition-colors">{l.label}</Link>))}
-              </nav>
-              <div className="p-6 border-t border-[var(--border)]">
-                {user ? (
-                  <div className="space-y-2">
-                    <p className="text-sm font-medium">{user.name}</p>
-                    <button onClick={handleLogout} className="text-xs text-red-500">Log Out</button>
-                  </div>
-                ) : (
-                  <div className="space-y-2">
-                    <Link href="/login" className="block w-full text-center py-2 border border-[var(--border)] text-sm tracking-widest uppercase hover:bg-[var(--bg-tertiary)] transition-colors">Login</Link>
-                    <Link href="/signup" className="block w-full text-center py-2 bg-[var(--text-primary)] text-[var(--bg-primary)] text-sm tracking-widest uppercase">Sign Up</Link>
-                  </div>
-                )}
+          <>
+            {/* 1. Semi-transparent Backdrop */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setMobileOpen(false)}
+              className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 md:hidden"
+            />
+
+            {/* 2. Sliding Side Drawer */}
+            <motion.div
+              initial={{ x: '-100%' }}
+              animate={{ x: 0 }}
+              exit={{ x: '-100%' }}
+              transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+              className="fixed inset-y-0 left-0 w-[80%] max-w-sm bg-white dark:bg-zinc-900 z-50 p-6 shadow-2xl md:hidden"
+            >
+              <div className="flex flex-col h-full">
+                {/* Header with Branding and Close Button */}
+                <div className="flex items-center justify-between mb-8">
+                  <span className="text-xl font-black tracking-tighter">
+                    RAVAGE <span className="text-gray-500">STYLE</span>
+                  </span>
+                  <button 
+                    onClick={() => setMobileOpen(false)}
+                    className="p-2 hover:bg-gray-100 dark:hover:bg-zinc-800 rounded-full"
+                  >
+                    <X size={24} />
+                  </button>
+                </div>
+
+                {/* Navigation Links */}
+                <nav className="flex flex-col space-y-4">
+                  {NAV.map((link) => (
+                    <Link
+                      key={link.href}
+                      href={link.href}
+                      onClick={() => setMobileOpen(false)}
+                      className={`text-2xl font-bold uppercase tracking-tight transition-colors ${
+                        pathname === link.href ? 'text-ravage-red' : 'text-gray-800 dark:text-gray-200'
+                      }`}
+                    >
+                      {link.label}
+                    </Link>
+                  ))}
+                </nav>
+
+                {/* Bottom Actions (User, Wishlist) */}
+                <div className="mt-auto pt-6 border-t border-gray-100 dark:border-zinc-800 space-y-4">
+                  <Link 
+                    href="/profile" 
+                    className="flex items-center gap-3 text-lg font-medium"
+                    onClick={() => setMobileOpen(false)}
+                  >
+                    <User size={20} /> Account
+                  </Link>
+                  <Link 
+                    href="/wishlist" 
+                    className="flex items-center gap-3 text-lg font-medium"
+                    onClick={() => setMobileOpen(false)}
+                  >
+                    <Heart size={20} /> Wishlist
+                  </Link>
+                </div>
               </div>
             </motion.div>
-          </motion.div>
+          </>
         )}
       </AnimatePresence>
 

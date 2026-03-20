@@ -44,7 +44,6 @@ ProductSchema.pre('save', function(next) {
   next();
 });
 
-ProductSchema.index({ slug: 1 });
 ProductSchema.index({ category: 1, isActive: 1 });
 ProductSchema.index({ trendingScore: -1 });
 ProductSchema.index({ name: 'text', description: 'text', tags: 'text' });
