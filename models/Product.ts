@@ -1,7 +1,7 @@
 import mongoose, { Schema, Document, Model } from 'mongoose';
 
 export interface IProduct extends Document {
-  _id: string; name: string; slug: string; description: string; shortDescription?: string;
+  _id: mongoose.Types.ObjectId; name: string; slug: string; description: string; shortDescription?: string;
   price: number; compareAtPrice?: number;
   category: 'T-Shirts'|'Hoodies'|'Jackets'|'Accessories';
   images: string[];
