@@ -1,0 +1,31 @@
+# .gitignore for Ravage Style (Next.js + Node.js + VSCode)
+
+# Node modules
+node_modules/
+
+# Build output
+.next/
+out/
+dist/
+
+# Local env files
+.env*
+!.env.example
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# VSCode
+.vscode/
+
+# Misc
+coverage/
+
+# Optional: Ignore local database
+*.local.db
