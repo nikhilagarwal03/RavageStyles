@@ -23,6 +23,7 @@ export async function POST(req: NextRequest) {
     res.cookies.set('auth-token', token, { httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: 'lax', maxAge: 604800, path: '/' });
     return res;
   } catch (e: any) {
+    console.error('Signup error:', e);
     if (e.code === 11000) return errorResponse('Email already exists', 409);
     return errorResponse('Failed to create account', 500);
   }
